@@ -6,5 +6,20 @@
 </head>
 <body>
   <h1>Hello</h1>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"> </script>
+  <script>
+    async function getRoomData(id) {
+      const response = await fetch(`./rooms/${id}`)
+      const json = await response.json()
+      return json
+    }
+
+    async function main() {
+      const json = await getRoomData(1)
+      console.log(json)
+    }
+
+    window.onload = main
+    </script>
 </body>
 </html>
