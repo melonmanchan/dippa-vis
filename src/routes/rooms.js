@@ -1,6 +1,7 @@
 const Router = require('express-promise-router')
 const db = require('../db')
 const router = new Router()
+const R = require('ramda')
 
 // export our router to be mounted by the parent application
 module.exports = router
@@ -23,9 +24,25 @@ router.get('/:id', async (req, res) => {
     [id]
   )
 
+  const userIds = R.uniq(
+    watsonRow.map(w => w.user_id),
+    googleRow.map(g => g.user_id)
+  )
+
+  const { rows: usersRow } = await db.query(
+    'SELECT * FROM users WHERE id = ANY($1::int[])',
+    [userIds]
+  )
+
+  const userMap = usersRow.reduce((acc, curr) => {
+    acc[curr.id] = curr
+    return acc
+  }, {})
+
   res.json({
     google: googleRow,
     watson: watsonRow,
-    rooms: roomsRow
+    rooms: roomsRow,
+    users: userMap
   })
 })
