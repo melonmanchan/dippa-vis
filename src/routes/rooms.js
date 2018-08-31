@@ -7,6 +7,25 @@ module.exports = router
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params
-  const { rows } = await db.query('SELECT * FROM users WHERE id = $1', [id])
-  res.send(rows[0])
+
+  const { rows: googleRow } = await db.query(
+    'SELECT * FROM google_results WHERE room_id = $1;',
+    [id]
+  )
+
+  const { rows: watsonRow } = await db.query(
+    'SELECT * FROM watson_results WHERE room_id = $1;',
+    [id]
+  )
+
+  const { rows: roomsRow } = await db.query(
+    'SELECT * FROM rooms WHERE id = $1;',
+    [id]
+  )
+
+  res.json({
+    google: googleRow,
+    watson: watsonRow,
+    rooms: roomsRow
+  })
 })
