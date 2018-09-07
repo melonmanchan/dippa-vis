@@ -104,23 +104,35 @@
         return data
       })
 
+      const angerData = r.google.map((g) => {
+        const data = { x: g.created_at, y: g.anger }
+        return data
+      })
+
       return [
         {
-          label: 'Joy data points',
+          label: 'Anger',
+          backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
+          borderColor: chartColors.green,
+          fill: false,
+          data: angerData
+        },
+        {
+          label: 'Joy',
           backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
           borderColor: chartColors.red,
           fill: false,
           data: joyData
         },
         {
-          label: 'Sorrow data points',
+          label: 'Sorrow',
           backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
           borderColor: chartColors.blue,
           fill: false,
           data: sorrowData
         },
         {
-          label: 'Surprise data points',
+          label: 'Surprise',
           backgroundColor: color(chartColors.yellow).alpha(0.5).rgbString(),
           borderColor: chartColors.yellow,
           fill: false,

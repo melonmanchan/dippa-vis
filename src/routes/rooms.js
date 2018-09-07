@@ -15,7 +15,7 @@ router.get('/:id', async (req, res) => {
   )
 
   const { rows: watsonRow } = await db.query(
-    'SELECT * FROM watson_results WHERE room_id = $1;',
+    'SELECT keywords.contents as keyword_content, * FROM keywords JOIN watson_results ON watson_results.id = keywords.watson_id WHERE watson_results.room_id = $1;',
     [id]
   )
 
@@ -41,8 +41,58 @@ router.get('/:id', async (req, res) => {
 
   res.json({
     google: googleRow,
-    watson: watsonRow,
+    watson: fixWatsonKeywords(watsonRow),
     rooms: roomsRow,
     users: userMap
   })
 })
+
+function fixWatsonKeywords(kw) {
+  return kw
+    .reduce((acc, curr) => {
+      const ind = acc.findIndex(w => w.watson_id == curr.id)
+
+      if (ind === -1) {
+        curr.keywords = [
+          {
+            word: curr.keyword_content,
+            sentiment: curr.sentiment,
+            joy: curr.joy,
+            fear: curr.fear,
+            disgust: curr.disgust,
+            sadness: curr.sadness,
+            anger: curr.anger
+          }
+        ]
+
+        acc.push(curr)
+        return acc
+      }
+
+      acc[ind].keywords = acc[ind].keywords || []
+
+      acc[ind].keywords.push({
+        word: curr.keyword_content,
+        sentiment: curr.sentiment,
+        joy: curr.joy,
+        fear: curr.fear,
+        disgust: curr.disgust,
+        sadness: curr.sadness,
+        anger: curr.anger
+      })
+
+      return acc
+    }, [])
+    .map(
+      R.omit([
+        'keyword_content',
+        'anger',
+        'sentiment',
+        'joy',
+        'sadness',
+        'fear',
+        'disgust',
+        'anger'
+      ])
+    )
+}
