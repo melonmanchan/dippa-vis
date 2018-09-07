@@ -6,8 +6,130 @@
 </head>
 <body>
   <h1>Hello</h1>
+
+  <script src="//cdn.jsdelivr.net/npm/ramda@latest/dist/ramda.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"> </script>
   <script>
+    const chartColors = {
+      red: 'rgb(255, 99, 132)',
+      orange: 'rgb(255, 159, 64)',
+      yellow: 'rgb(255, 205, 86)',
+      green: 'rgb(75, 192, 192)',
+      blue: 'rgb(54, 162, 235)',
+      purple: 'rgb(153, 102, 255)',
+      grey: 'rgb(201, 203, 207)'
+    };
+
+		const color = Chart.helpers.color;
+
+  function initChart(datasets) {
+    const ctx = document.getElementById('canvas').getContext('2d');
+
+		const config = {
+			type: 'line',
+			data: {
+        datasets: datasets,
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Chart.js Time Point Data'
+				},
+				scales: {
+					xAxes: [{
+						type: 'time',
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Date'
+						},
+						ticks: {
+							major: {
+								fontStyle: 'bold',
+								fontColor: '#FF0000'
+							}
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'value'
+						}
+					}]
+				}
+			}
+		};
+
+    console.log(config)
+    new Chart(ctx, config);
+  }
+
+    function separateDataByUsers (response) {
+      const { google, watson, users } = response
+      const ids = R.keys(users)
+
+      const formatted = ids.map(id => {
+        const googleById = google.filter(g => g.user_id == id)
+        const watsonById = watson.filter(g => g.user_id == id)
+
+        return {
+          user: users[id],
+          google: googleById,
+          watson: watsonById
+        }
+      })
+
+      return formatted
+    }
+
+  function toDataset(response) {
+    return response.map((r) => {
+      // TODO: other kinds of data
+      const joyData = r.google.map((g) => {
+        const data = { x: g.created_at, y: g.joy }
+        return data
+      })
+
+
+      const sorrowData = r.google.map((g) => {
+        const data = { x: g.created_at, y: g.sorrow }
+        return data
+      })
+
+      const surpriseData = r.google.map((g) => {
+        const data = { x: g.created_at, y: g.surprise }
+        return data
+      })
+
+      return [
+        {
+          label: 'Joy data points',
+          backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
+          borderColor: chartColors.red,
+          fill: false,
+          data: joyData
+        },
+        {
+          label: 'Sorrow data points',
+          backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+          borderColor: chartColors.blue,
+          fill: false,
+          data: sorrowData
+        },
+        {
+          label: 'Surprise data points',
+          backgroundColor: color(chartColors.yellow).alpha(0.5).rgbString(),
+          borderColor: chartColors.yellow,
+          fill: false,
+          data: surpriseData
+        }
+      ]
+    })
+  }
+
     async function getRoomData(id) {
       const response = await fetch(`./rooms/${id}`)
       const json = await response.json()
@@ -16,10 +138,16 @@
 
     async function main() {
       const json = await getRoomData(1)
-      console.log(json)
+      const dataByUser = separateDataByUsers(json)
+      const asDataset = toDataset([ dataByUser[0] ])
+
+      initChart(R.flatten(asDataset))
     }
 
     window.onload = main
     </script>
+	<div style="width:75%;">
+		<canvas id="canvas"></canvas>
+	</div>
 </body>
 </html>
