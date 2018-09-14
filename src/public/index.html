@@ -4,9 +4,20 @@
   <meta charset="UTF-8">
   <title></title>
 </head>
-<body>
-  <h1>Hello</h1>
+<style>
 
+  .canvas-wrapper {
+    display: flex;
+  }
+
+  .emotions {
+    width:50%;
+  }
+  .radar {
+    width: 50%;
+  }
+</style>
+<body>
   <script src="//cdn.jsdelivr.net/npm/ramda@latest/dist/ramda.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"> </script>
@@ -16,14 +27,24 @@
     async function main() {
       const json = await getRoomData(1)
       const dataByUser = separateDataByUsers(json)
-      const asDataset = googleDatasetFromResponse([ dataByUser[0] ])
-      initEmotionsChart(asDataset)
+
+      const lineDataset = googleLineDatasetFromResponse([ dataByUser[0] ])
+      initEmotionsLineChart(lineDataset)
+
+      const radarDataset = googleRadarDatasetFromResponse([ dataByUser[0]])
+      initEmotionsRadarChart(radarDataset)
     }
 
     window.onload = main
     </script>
-	<div style="width:95%;">
-		<canvas id="emotions"></canvas>
-	</div>
+  <div class="canvas-wrapper">
+    <div class="emotions">
+		  <canvas id="emotions"></canvas>
+    </div>
+
+    <div class="radar">
+		  <canvas id="radar"></canvas>
+    </div>
+  </div>
 </body>
 </html>

@@ -22,7 +22,7 @@ function separateDataByUsers(response) {
   return formatted
 }
 
-function googleDatasetFromResponse(response) {
+function googleLineDatasetFromResponse(response) {
   return R.flatten(
     response.map(r => {
       // TODO: other kinds of data
@@ -86,4 +86,25 @@ function googleDatasetFromResponse(response) {
       ]
     })
   )
+}
+
+function googleRadarDatasetFromResponse(response) {
+  return R.flatten(
+    response.map(r => {
+      const joyMean = R.mean(r.google.map(g => g.joy))
+      const sorrowMean = R.mean(r.google.map(g => g.sorrow))
+      const angerMean = R.mean(r.google.map(g => g.anger))
+      const surpriseMean = R.mean(r.google.map(g => g.surprise))
+
+      return {
+        labels: ['Anger', 'Joy', 'Sorrow', 'Surprise'],
+        datasets: [
+          {
+            label: 'Emotion data',
+            data: [angerMean, joyMean, sorrowMean, surpriseMean]
+          }
+        ]
+      }
+    })
+  )[0]
 }

@@ -10,7 +10,7 @@ const chartColors = {
 
 const color = Chart.helpers.color
 
-function initEmotionsChart(datasets) {
+function initEmotionsLineChart(datasets) {
   const ctx = document.getElementById('emotions').getContext('2d')
 
   const config = {
@@ -54,7 +54,16 @@ function initEmotionsChart(datasets) {
     }
   }
 
-  console.log(config)
+  new Chart(ctx, config)
+}
+
+function initEmotionsRadarChart(data) {
+  const ctx = document.getElementById('radar').getContext('2d')
+
+  const config = {
+    type: 'radar',
+    data: data
+  }
 
   new Chart(ctx, config)
 }
