@@ -40,12 +40,16 @@ router.get('/:id', async (req, res) => {
   }, {})
 
   res.json({
-    google: googleRow,
-    watson: fixWatsonKeywords(watsonRow),
+    google: googleRow.sort(sortByDate),
+    watson: fixWatsonKeywords(watsonRow).sort(sortByDate),
     rooms: roomsRow,
     users: userMap
   })
 })
+
+function sortByDate(a, b) {
+  return new Date(a.created_at) - new Date(b.created_at)
+}
 
 function fixWatsonKeywords(kw) {
   return kw

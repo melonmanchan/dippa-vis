@@ -28,12 +28,37 @@
       const json = await getRoomData(1)
       const dataByUser = separateDataByUsers(json)
 
-      const lineDataset = googleLineDatasetFromResponse([ dataByUser[0] ])
-      initEmotionsLineChart(lineDataset)
+      const initChartByUser = (userId) => {
+        const ind = dataByUser.findIndex(d => d.user.id == userId)
 
-      const radarDataset = googleRadarDatasetFromResponse([ dataByUser[0]])
-      initEmotionsRadarChart(radarDataset)
+        const lineDataset = googleLineDatasetFromResponse([ dataByUser[ind] ])
+        initEmotionsLineChart(lineDataset)
+
+        const radarDataset = googleRadarDatasetFromResponse([ dataByUser[ind]])
+        initEmotionsRadarChart(radarDataset)
+      }
+
+
+      initUsersSelect(json.users, (id) => {
+        initChartByUser(id)
+      })
+
+      initChartByUser(dataByUser[0].user.id)
     }
+
+  function initUsersSelect(users, callback) {
+    const select = document.getElementById('users-select')
+    const ids = R.keys(users)
+
+    select.onchange = (e) => callback(e.target.value)
+
+    ids.forEach(id => {
+      const option = document.createElement("option");
+      option.value = id
+      option.text = users[id].name
+      select.add(option)
+    })
+  }
 
     window.onload = main
     </script>
@@ -46,5 +71,8 @@
 		  <canvas id="radar"></canvas>
     </div>
   </div>
+
+  <select id="users-select">
+  </select>
 </body>
 </html>
