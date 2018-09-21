@@ -60,12 +60,12 @@ function fixWatsonKeywords(kw) {
         curr.keywords = [
           {
             word: curr.keyword_content,
-            sentiment: curr.sentiment,
-            joy: curr.joy,
-            fear: curr.fear,
-            disgust: curr.disgust,
-            sadness: curr.sadness,
-            anger: curr.anger
+            sentiment: 5 * curr.sentiment,
+            joy: 5 * curr.joy,
+            fear: 5 * curr.fear,
+            disgust: 5 * curr.disgust,
+            sadness: 5 * curr.sadness,
+            anger: 5 * curr.anger
           }
         ]
 
@@ -77,12 +77,12 @@ function fixWatsonKeywords(kw) {
 
       acc[ind].keywords.push({
         word: curr.keyword_content,
-        sentiment: curr.sentiment,
-        joy: curr.joy,
-        fear: curr.fear,
-        disgust: curr.disgust,
-        sadness: curr.sadness,
-        anger: curr.anger
+        sentiment: 5 * curr.sentiment,
+        joy: 5 * curr.joy,
+        fear: 5 * curr.fear,
+        disgust: 5 * curr.disgust,
+        sadness: 5 * curr.sadness,
+        anger: 5 * curr.anger
       })
 
       return acc

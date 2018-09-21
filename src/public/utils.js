@@ -69,7 +69,7 @@ function googleRadarDatasetFromResponse(response) {
         labels: ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust'],
         datasets: [
           {
-            label: 'Emotion data',
+            label: 'Your emotions',
             data: [
               nanClamp(angerMean),
               nanClamp(joyMean),
