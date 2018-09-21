@@ -10,55 +10,8 @@ const chartColors = {
 
 const color = Chart.helpers.color
 
-function initEmotionsLineChart(datasets) {
-  const ctx = document.getElementById('emotions').getContext('2d')
-
-  const config = {
-    type: 'line',
-    data: {
-      datasets: datasets
-    },
-    options: {
-      responsive: true,
-      title: {
-        display: true,
-        text: 'Chart.js Time Point Data'
-      },
-      scales: {
-        xAxes: [
-          {
-            type: 'time',
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'Date'
-            },
-            ticks: {
-              major: {
-                fontStyle: 'bold',
-                fontColor: '#FF0000'
-              }
-            }
-          }
-        ],
-        yAxes: [
-          {
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'value'
-            }
-          }
-        ]
-      }
-    }
-  }
-
-  new Chart(ctx, config)
-}
-
-function initEmotionsRadarChart(data) {
-  const ctx = document.getElementById('radar').getContext('2d')
+function initEmotionsRadarChart(data, selector) {
+  const ctx = document.getElementById(selector).getContext('2d')
 
   const config = {
     type: 'radar',

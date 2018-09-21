@@ -10,10 +10,7 @@
     display: flex;
   }
 
-  .emotions {
-    width:50%;
-  }
-  .radar {
+  .canvas-container {
     width: 50%;
   }
 </style>
@@ -31,11 +28,12 @@
       const initChartByUser = (userId) => {
         const ind = dataByUser.findIndex(d => d.user.id == userId)
 
-        const lineDataset = googleLineDatasetFromResponse([ dataByUser[ind] ])
-        initEmotionsLineChart(lineDataset)
+        const selfRadarDataset = googleRadarDatasetFromResponse([ dataByUser[ind]])
+        console.log(selfRadarDataset)
+        initEmotionsRadarChart(selfRadarDataset, 'radar-self')
 
-        const radarDataset = googleRadarDatasetFromResponse([ dataByUser[ind]])
-        initEmotionsRadarChart(radarDataset)
+//        const selfRadarDataset = googleRadarDatasetFromResponse(dataByUser)
+//        initEmotionsRadarChart(radarDataset, 'radar-group')
       }
 
 
@@ -63,12 +61,12 @@
     window.onload = main
     </script>
   <div class="canvas-wrapper">
-    <div class="emotions">
-		  <canvas id="emotions"></canvas>
+    <div class="canvas-container">
+		  <canvas id="radar-self"></canvas>
     </div>
 
-    <div class="radar">
-		  <canvas id="radar"></canvas>
+    <div class="canvas-container">
+		  <canvas id="radar-group"></canvas>
     </div>
   </div>
 
