@@ -24,30 +24,49 @@
   <script src="./app.js"> </script>
   <script>
     async function main() {
+      let currentLabel = 'joy'
+      let currentUserInd = 0
+
       const json = await getRoomData(1)
       const dataByUser = separateDataByUsers(json)
 
-      const initChartByUser = (userId) => {
-        const ind = dataByUser.findIndex(d => d.user.id == userId)
-
+      const initChartByUser = (ind) => {
         const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[ind]])
         const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser)
 
         initEmotionsRadarChart(selfRadarDataset, 'radar-self')
         initEmotionsRadarChart(groupRadarDataset, 'radar-group')
-
-        const selfWords = watsonWordsFromResponse([dataByUser[ind]])
-        const groupWords = watsonWordsFromResponse(dataByUser)
-
-        initEmotionsWordCloud(selfWords, 'joy')
       }
 
+      const _initEmotionsWordCloudByUser = (ind) => (emotion) => {
+        currentLabel = emotion
+        const selfWords = watsonWordsFromResponse([dataByUser[ind]])
+        initEmotionsWordCloud(selfWords, currentLabel, '.self-word-cloud')
+      }
+
+      let initEmotionsWordCloudByUser = () => {}
+
+      const initEmotionsWordCloudForGroup = (emotion) => {
+        const groupWords = watsonWordsFromResponse(dataByUser)
+        initEmotionsWordCloud(groupWords, emotion, '.group-word-cloud')
+      }
+
+      document.getElementById('self-word-select').onchange = (e) => initEmotionsWordCloudByUser(e.target.value)
+      document.getElementById('group-word-select').onchange = (e) => initEmotionsWordCloudForGroup(e.target.value)
 
       initUsersSelect(json.users, (id) => {
-        initChartByUser(id)
+        const ind = dataByUser.findIndex(d => d.user.id == id)
+
+        currentUserInd = ind
+        initChartByUser(currentUserInd)
+        initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
+        initEmotionsWordCloudByUser(currentLabel)
       })
 
-      initChartByUser(dataByUser[0].user.id)
+      // Default initialization
+      initChartByUser(currentUserInd)
+      initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
+      initEmotionsWordCloudByUser(currentLabel)
     }
 
   function initUsersSelect(users, callback) {
@@ -76,7 +95,31 @@
     </div>
   </div>
 
+  <div class="canvas-wrapper">
+    <div class="self-word-cloud">
+    </div>
+
+    <div class="group-word-cloud">
+    </div>
+  </div>
+
   <select id="users-select">
+  </select>
+
+  <select id="self-word-select">
+    <option value="joy">Joy</option>
+    <option value="fear">Fear</option>
+    <option value="disgust">Disgust</option>
+    <option value="anger">Anger</option>
+    <option value="sadness">Sadness</option>
+  </select>
+
+  <select id="group-word-select">
+    <option value="joy">Joy</option>
+    <option value="fear">Fear</option>
+    <option value="disgust">Disgust</option>
+    <option value="anger">Anger</option>
+    <option value="sadness">Sadness</option>
   </select>
 </body>
 </html>

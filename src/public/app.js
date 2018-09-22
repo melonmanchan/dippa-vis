@@ -21,14 +21,20 @@ function initEmotionsRadarChart(data, selector) {
   new Chart(ctx, config)
 }
 
-function initEmotionsWordCloud(words, label) {
+function initEmotionsWordCloud(words, label, selector) {
+  console.log(words)
+  console.log(label)
+  console.log(selector)
+  d3
+    .select(selector)
+    .select('svg')
+    .remove()
+
   const fill = d3.scale.category20()
 
   const formattedWords = words.map(function(d) {
     return { text: d.word, size: d[label] * 11 }
   })
-
-  console.log(formattedWords)
 
   d3.layout
     .cloud()
@@ -47,7 +53,7 @@ function initEmotionsWordCloud(words, label) {
 
   function draw(words) {
     d3
-      .select('body')
+      .select(selector)
       .append('svg')
       .attr('width', 800)
       .attr('height', 600)
