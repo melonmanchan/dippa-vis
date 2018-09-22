@@ -15,6 +15,8 @@
   }
 </style>
 <body>
+  <script src="https://d3js.org/d3.v3.js"> </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.4/d3.layout.cloud.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/ramda@latest/dist/ramda.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"> </script>
@@ -28,12 +30,16 @@
       const initChartByUser = (userId) => {
         const ind = dataByUser.findIndex(d => d.user.id == userId)
 
-        const selfRadarDataset = googleRadarDatasetFromResponse([ dataByUser[ind]])
-        console.log(selfRadarDataset)
-        initEmotionsRadarChart(selfRadarDataset, 'radar-self')
+        const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[ind]])
+        const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser)
 
-//        const selfRadarDataset = googleRadarDatasetFromResponse(dataByUser)
-//        initEmotionsRadarChart(radarDataset, 'radar-group')
+        initEmotionsRadarChart(selfRadarDataset, 'radar-self')
+        initEmotionsRadarChart(groupRadarDataset, 'radar-group')
+
+        const selfWords = watsonWordsFromResponse([dataByUser[ind]])
+        const groupWords = watsonWordsFromResponse(dataByUser)
+
+        initEmotionsWordCloud(selfWords, 'joy')
       }
 
 

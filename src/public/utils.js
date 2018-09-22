@@ -34,8 +34,8 @@ function googleRadarDatasetFromResponse(response) {
 
   nanClamp = num => (isNaN(num) ? 0 : num)
 
-  return R.flatten(
-    response.map(r => {
+  const data = response.reduce(
+    (acc, r) => {
       const gJoy = r.google.reduce(sum('joy'), 0)
       const gSorrow = r.google.reduce(sum('sorrow'), 0)
       const gAnger = r.google.reduce(sum('anger'), 0)
@@ -65,22 +65,31 @@ function googleRadarDatasetFromResponse(response) {
       const sadnessMean = (gSorrow + wSadness) / (gSorrowCount + wSadnessCount)
       const disgustMean = wDisgust / wDisgustCount
 
-      return {
-        labels: ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust'],
-        datasets: [
-          {
-            label: 'Your emotions',
-            data: [
-              nanClamp(angerMean),
-              nanClamp(joyMean),
-              nanClamp(sadnessMean),
-              nanClamp(surpriseMean),
-              nanClamp(fearMean),
-              nanClamp(disgustMean)
-            ]
-          }
-        ]
+      return [
+        acc[0] + angerMean,
+        acc[1] + joyMean,
+        acc[2] + sadnessMean,
+        acc[3] + surpriseMean,
+        acc[4] + fearMean,
+        acc[5] + disgustMean
+      ]
+    },
+    [0, 0, 0, 0, 0, 0]
+  )
+
+  const average = data.map(d => d / response.length)
+
+  return {
+    labels: ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust'],
+    datasets: [
+      {
+        label: 'Your emotions',
+        data: average
       }
-    })
-  )[0]
+    ]
+  }
+}
+
+function watsonWordsFromResponse(response) {
+  return R.flatten(response.map(r => r.watson.map(w => w.keywords)))
 }
