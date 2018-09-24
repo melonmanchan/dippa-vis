@@ -5,6 +5,41 @@
   <title></title>
 </head>
 <style>
+  body {
+    margin: 0;
+  }
+
+  main {
+    padding-top: 80px;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  .color-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .colors {
+    display: flex;
+    justify-content: space-around;
+    width: 60%;
+  }
+
+  .color-wrapper span {
+    margin-right: 5px;
+    height: 24px;
+    display: inline-block;
+    line-height: 24px;
+    text-transform: capitalize;
+  }
+
+  .color-box {
+    height: 24px;
+    width: 24px;
+    display: inline-block;
+  }
 
   .canvas-wrapper {
     display: flex;
@@ -27,6 +62,16 @@
     fill: none;
     stroke: #000;
   }
+
+.header {
+  display: flex;
+  position: fixed;
+  width: 100vw;
+  background-color: #252323;
+  height: 30px;
+  padding: 20px;
+  color: white;
+}
 </style>
 <body>
   <script>
@@ -108,6 +153,22 @@
 
       initEmotionsMarimekkoByUser(currentSampleSize)
       initEmotionsMarimekko(marimekkoDataFromResponse(json, currentSampleSize), '#group-marimekko')
+
+      const colorsWrapper = document.getElementById('colors')
+
+      R.toPairs(window.emotionsToColor).map(arr => {
+        const [emotion, color] = arr
+        const wrapperSpan = document.createElement('span')
+        wrapperSpan.className = 'color-wrapper'
+        const label = document.createElement('span')
+        const colorBox = document.createElement('span')
+        colorBox.className = 'color-box'
+        colorBox.style.backgroundColor = color
+        label.innerHTML = emotion
+        wrapperSpan.appendChild(label)
+        wrapperSpan.appendChild(colorBox)
+        colorsWrapper.appendChild(wrapperSpan)
+      })
     }
 
   function initUsersSelect(users, callback) {
@@ -124,57 +185,76 @@
     })
   }
 
+
+
     window.onload = main
     </script>
-  <div class="canvas-wrapper">
-    <div class="canvas-container">
-		  <canvas id="radar-self"></canvas>
-    </div>
+    <header class="header">
+      <div>
+        <span>
+        Current user: 
+        </span>
 
-    <div class="canvas-container">
-		  <canvas id="radar-group"></canvas>
-    </div>
-  </div>
-
-  <div class="canvas-wrapper">
-    <div class="self-word-cloud">
-    </div>
-
-    <div class="group-word-cloud">
-    </div>
-  </div>
-
-  <select id="users-select">
-  </select>
-
-  <select id="self-word-select">
-    <option value="joy">Joy</option>
-    <option value="fear">Fear</option>
-    <option value="disgust">Disgust</option>
-    <option value="anger">Anger</option>
-    <option value="sadness">Sadness</option>
-  </select>
-
-  <select id="group-word-select">
-    <option value="joy">Joy</option>
-    <option value="fear">Fear</option>
-    <option value="disgust">Disgust</option>
-    <option value="anger">Anger</option>
-    <option value="sadness">Sadness</option>
-  </select>
-
-  <div class="canvas-wrapper">
-    <div>
-      <input type="range" min="1" max="25" value="10" id="self-marimekko-range">
-      <div id="self-marimekko">
+      <select id="users-select">
+      </select>
       </div>
-    </div>
 
-    <div>
-      <input type="range" min="1" max="25" value="10" id="group-marimekko-range">
-      <div id="group-marimekko">
+      <div class="colors" id="colors">
+
       </div>
-    </div>
-  </div>
+    </header>
+
+    <main>
+      <div class="canvas-wrapper">
+        <div class="canvas-container">
+          <canvas id="radar-self"></canvas>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="radar-group"></canvas>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <div>
+      <div class="self-word-cloud">
+        </div>
+        <select id="self-word-select">
+          <option value="joy">Joy</option>
+          <option value="fear">Fear</option>
+          <option value="disgust">Disgust</option>
+          <option value="anger">Anger</option>
+          <option value="sadness">Sadness</option>
+        </select>
+        </div>
+
+        <div>
+          <div class="group-word-cloud">
+          </div>
+          <select id="group-word-select">
+            <option value="joy">Joy</option>
+            <option value="fear">Fear</option>
+            <option value="disgust">Disgust</option>
+            <option value="anger">Anger</option>
+            <option value="sadness">Sadness</option>
+          </select>
+        </div>
+      </div>
+
+
+      <div class="canvas-wrapper">
+        <div>
+          <input type="range" min="1" max="25" value="10" id="self-marimekko-range">
+          <div id="self-marimekko">
+          </div>
+        </div>
+
+        <div>
+          <input type="range" min="1" max="25" value="10" id="group-marimekko-range">
+          <div id="group-marimekko">
+          </div>
+        </div>
+      </div>
+    </main>
 </body>
 </html>
