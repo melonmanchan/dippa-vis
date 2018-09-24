@@ -13,6 +13,20 @@
   .canvas-container {
     width: 50%;
   }
+
+  rect {
+    stroke: #000;
+    fill: none;
+  }
+
+  svg {
+    shape-rendering: crispEdges;
+  }
+
+  .axis path, .axis line {
+    fill: none;
+    stroke: #000;
+  }
 </style>
 <body>
   <script src="https://d3js.org/d3.v3.js"> </script>
@@ -63,10 +77,12 @@
         initEmotionsWordCloudByUser(currentLabel)
       })
 
-      // Default initialization
-      initChartByUser(currentUserInd)
-      initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
-      initEmotionsWordCloudByUser(currentLabel)
+//      // Default initialization
+//      initChartByUser(currentUserInd)
+//      initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
+//      initEmotionsWordCloudByUser(currentLabel)
+
+      console.log(marimekkoDataFromResponse(json))
     }
 
   function initUsersSelect(users, callback) {
@@ -83,6 +99,7 @@
     })
   }
 
+    initEmotionsMarimekko()
     window.onload = main
     </script>
   <div class="canvas-wrapper">

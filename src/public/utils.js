@@ -1,3 +1,14 @@
+const sum = label => (acc, curr) => acc + parseInt(curr[label])
+const watsonSum = label => (acc, curr) =>
+  acc + curr.keywords.reduce(sum(label), 0)
+
+const count = label => (acc, curr) => (curr[label] != 0 ? acc + 1 : acc)
+
+const watsonCount = label => (acc, curr) =>
+  acc + curr.keywords.reduce(count(label), 0)
+
+const nanClamp = num => (isNaN(num) ? 0 : num)
+
 async function getRoomData(id) {
   const response = await fetch(`./rooms/${id}`)
   const json = await response.json()
@@ -23,17 +34,6 @@ function separateDataByUsers(response) {
 }
 
 function googleRadarDatasetFromResponse(response) {
-  const sum = label => (acc, curr) => acc + parseInt(curr[label])
-  const watsonSum = label => (acc, curr) =>
-    acc + curr.keywords.reduce(sum(label), 0)
-
-  const count = label => (acc, curr) => (curr[label] != 0 ? acc + 1 : acc)
-
-  const watsonCount = label => (acc, curr) =>
-    acc + curr.keywords.reduce(count(label), 0)
-
-  nanClamp = num => (isNaN(num) ? 0 : num)
-
   const data = response.reduce(
     (acc, r) => {
       const gJoy = r.google.reduce(sum('joy'), 0)
@@ -92,4 +92,112 @@ function googleRadarDatasetFromResponse(response) {
 
 function watsonWordsFromResponse(response) {
   return R.flatten(response.map(r => r.watson.map(w => w.keywords)))
+}
+
+//contents: "That test was so long!  Four hours!  I really do not understand why we have to take this test anyway.  Are our grade point averages (GPAs) not good enough for college?"
+//created_at: "2018-09-21T12:30:30.002Z"
+//id: "1"
+//keywords: (4) [{…}, {…}, {…}, {…}]
+//relevance: 0.955942988395691
+//room_id: 1
+//user_id: 1
+//watson_id: 1
+
+//anger: 1.40659496188164
+//disgust: 0.2797899954020975
+//fear: 0.518645010888575
+//joy: 0.5065650120377551
+//sadness: 0.93511998653412
+function marimekkoDataFromResponse(response) {
+  const computeAverageEmotions = kw => {
+    const keywords = kw.reduce(
+      (acc, curr) => {
+        return Object.assign(
+          {},
+          {
+            anger: acc.anger + curr.anger,
+            disgust: acc.disgust + curr.disgust,
+            fear: acc.fear + curr.fear,
+            joy: acc.joy + curr.joy,
+            sadness: acc.sadness + curr.sadness
+          }
+        )
+      },
+      {
+        anger: 0,
+        disgust: 0,
+        fear: 0,
+        joy: 0,
+        sadness: 0
+      }
+    )
+
+    const avgKeywords = R.map(val => val / kw.length, keywords)
+
+    return avgKeywords
+  }
+
+  const formattedWatsonData = response.watson.map(w =>
+    Object.assign(
+      computeAverageEmotions(w.keywords),
+      {
+        type: 'watson',
+        timestamp: new Date(w.created_at).getTime()
+      },
+      R.omit(
+        [
+          'id',
+          'contents',
+          'keywords',
+          'created_at',
+          'relevance',
+          'room_id',
+          'user_id',
+          'watson_id'
+        ],
+        w
+      )
+    )
+  )
+
+  const formattedGoogleData = response.google.map(g =>
+    Object.assign(
+      {},
+      {
+        type: 'google',
+        timestamp: new Date(g.created_at).getTime()
+      },
+      R.omit(
+        [
+          'id',
+          'detection_confidence',
+          'image',
+          'room_id',
+          'user_id',
+          'created_at'
+        ],
+        g
+      )
+    )
+  )
+
+  const allData = [...formattedWatsonData, ...formattedGoogleData].sort(
+    (a, b) => a.timestamp < b.timestamp
+  )
+
+  // TODO: Make it work for all array sizes
+  const SAMPLES = 24
+  const perSlice = allData.length / SAMPLES
+  const out = []
+  let prevTimestamp = 0
+
+  for (let i = 0; i < allData.length; i++) {
+    if (i % perSlice === 0) {
+      prevTimestamp = allData[i].timestamp
+    }
+
+    out[i] = Object.assign({}, allData[i], { timestamp: prevTimestamp })
+  }
+
+  out.map(o => console.log(o.timestamp))
 }

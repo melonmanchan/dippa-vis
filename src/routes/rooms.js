@@ -40,12 +40,22 @@ router.get('/:id', async (req, res) => {
   }, {})
 
   res.json({
-    google: googleRow.sort(sortByDate),
+    google: googleRow.map(googleFixNumeric).sort(sortByDate),
     watson: fixWatsonKeywords(watsonRow).sort(sortByDate),
     rooms: roomsRow,
     users: userMap
   })
 })
+
+const googleFixNumeric = g =>
+  Object.assign({}, g, {
+    anger: parseInt(g.anger),
+    detection_confidence: parseInt(g.detection_confidence),
+    joy: parseInt(g.joy),
+    blurred: parseInt(g.blurred),
+    sorrow: parseInt(g.sorrow),
+    surprise: parseInt(g.surprise)
+  })
 
 function sortByDate(a, b) {
   return new Date(a.created_at) - new Date(b.created_at)
