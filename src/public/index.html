@@ -29,6 +29,17 @@
   }
 </style>
 <body>
+  <script>
+  window.emotionsToColor = {
+    joy: '#1abc9c',
+    surprise: '#e74c3c',
+    anger: '#f1c40f',
+    fear: '#ecf0f1',
+    sadness: '#2c3e50',
+    disgust: '#2ecc71'
+  }
+
+  </script>
   <script src="https://d3js.org/d3.v3.js"> </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.4/d3.layout.cloud.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/ramda@latest/dist/ramda.min.js"></script>
@@ -40,13 +51,14 @@
     async function main() {
       let currentLabel = 'joy'
       let currentUserInd = 0
+      let currentSampleSize = 10
 
       const json = await getRoomData(1)
       const dataByUser = separateDataByUsers(json)
 
       const initChartByUser = (ind) => {
-        const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[ind]])
-        const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser)
+        const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[ind]], 'Your emotions')
+        const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser,'Group emotions')
 
         initEmotionsRadarChart(selfRadarDataset, 'radar-self')
         initEmotionsRadarChart(groupRadarDataset, 'radar-group')
@@ -65,8 +77,17 @@
         initEmotionsWordCloud(groupWords, emotion, '.group-word-cloud')
       }
 
+      const initEmotionsMarimekkoByUser = (val) => {
+        currentSampleSize = val
+        const data = marimekkoDataFromResponse(dataByUser[currentUserInd], currentSampleSize)
+        initEmotionsMarimekko(data, '#self-marimekko')
+      }
+
       document.getElementById('self-word-select').onchange = (e) => initEmotionsWordCloudByUser(e.target.value)
       document.getElementById('group-word-select').onchange = (e) => initEmotionsWordCloudForGroup(e.target.value)
+
+      document.getElementById('group-marimekko-range').onchange = (e) => initEmotionsMarimekko(marimekkoDataFromResponse(json, parseInt(e.target.value)), '#group-marimekko')
+      document.getElementById('self-marimekko-range').onchange = (e) => initEmotionsMarimekkoByUser(parseInt(e.target.value))
 
       initUsersSelect(json.users, (id) => {
         const ind = dataByUser.findIndex(d => d.user.id == id)
@@ -75,14 +96,18 @@
         initChartByUser(currentUserInd)
         initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
         initEmotionsWordCloudByUser(currentLabel)
+        initEmotionsMarimekkoByUser(currentSampleSize)
       })
 
-//      // Default initialization
-//      initChartByUser(currentUserInd)
-//      initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
-//      initEmotionsWordCloudByUser(currentLabel)
+      // Default initialization
+      initChartByUser(currentUserInd)
 
-    initEmotionsMarimekko(marimekkoDataFromResponse(json))
+      initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
+      initEmotionsWordCloudByUser(currentLabel)
+      initEmotionsWordCloudForGroup('joy')
+
+      initEmotionsMarimekkoByUser(currentSampleSize)
+      initEmotionsMarimekko(marimekkoDataFromResponse(json, currentSampleSize), '#group-marimekko')
     }
 
   function initUsersSelect(users, callback) {
@@ -137,5 +162,19 @@
     <option value="anger">Anger</option>
     <option value="sadness">Sadness</option>
   </select>
+
+  <div class="canvas-wrapper">
+    <div>
+      <input type="range" min="1" max="25" value="10" id="self-marimekko-range">
+      <div id="self-marimekko">
+      </div>
+    </div>
+
+    <div>
+      <input type="range" min="1" max="25" value="10" id="group-marimekko-range">
+      <div id="group-marimekko">
+      </div>
+    </div>
+  </div>
 </body>
 </html>

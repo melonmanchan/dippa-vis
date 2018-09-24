@@ -1,13 +1,3 @@
-const chartColors = {
-  red: 'rgb(255, 99, 132)',
-  orange: 'rgb(255, 159, 64)',
-  yellow: 'rgb(255, 205, 86)',
-  green: 'rgb(75, 192, 192)',
-  blue: 'rgb(54, 162, 235)',
-  purple: 'rgb(153, 102, 255)',
-  grey: 'rgb(201, 203, 207)'
-}
-
 const color = Chart.helpers.color
 
 function initEmotionsRadarChart(data, selector) {
@@ -22,9 +12,6 @@ function initEmotionsRadarChart(data, selector) {
 }
 
 function initEmotionsWordCloud(words, label, selector) {
-  console.log(words)
-  console.log(label)
-  console.log(selector)
   d3
     .select(selector)
     .select('svg')
@@ -77,17 +64,13 @@ function initEmotionsWordCloud(words, label, selector) {
   }
 }
 
-function initEmotionsMarimekko(data) {
-  const margin = { top: 10, right: 20, bottom: 30, left: 30 }
+function initEmotionsMarimekko(data, selector) {
+  d3
+    .select(selector)
+    .select('svg')
+    .remove()
 
-  const emotionsToColor = {
-    joy: '#1abc9c',
-    surprise: '#e74c3c',
-    anger: '#f1c40f',
-    fear: '#ecf0f1',
-    sadness: '#2c3e50',
-    disgust: '#2ecc71'
-  }
+  const margin = { top: 10, right: 20, bottom: 30, left: 30 }
 
   const width = 960 - margin.left - margin.right
   const height = 450 - margin.top - margin.bottom
@@ -96,7 +79,7 @@ function initEmotionsMarimekko(data) {
   const p = d3.format('%')
 
   function title(d) {
-    return new Date(d.timestamp).toTimeString()
+    return `${new Date(d.timestamp).toTimeString()} - ${d.emotion}`
   }
 
   var nest = d3
@@ -119,7 +102,7 @@ function initEmotionsMarimekko(data) {
     .sort(null)
 
   var svg = d3
-    .select('body')
+    .select(selector)
     .append('svg')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
@@ -129,17 +112,17 @@ function initEmotionsMarimekko(data) {
     .datum({ values: nest.entries(data) })
     .call(chart)
 
-  svg
-    .append('g')
-    .attr('class', 'x axis')
-    .attr('transform', 'translate(0,' + treemap.size()[1] + ')')
-    .call(
-      d3.svg
-        .axis()
-        .scale(d3.scale.linear().range([0, treemap.size()[0]]))
-        .tickFormat(d3.format('%'))
-    )
-
+  //  svg
+  //    .append('g')
+  //    .attr('class', 'x axis')
+  //    .attr('transform', 'translate(0,' + treemap.size()[1] + ')')
+  //    .call(
+  //      d3.svg
+  //        .axis()
+  //        .scale(d3.scale.linear().range([0, treemap.size()[0]]))
+  //        .tickFormat(d3.format('%'))
+  //    )
+  //
   function chart(selection) {
     selection.each(function() {
       var cell = d3

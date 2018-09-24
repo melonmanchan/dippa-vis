@@ -33,7 +33,7 @@ function separateDataByUsers(response) {
   return formatted
 }
 
-function googleRadarDatasetFromResponse(response) {
+function googleRadarDatasetFromResponse(response, label) {
   const data = response.reduce(
     (acc, r) => {
       const gJoy = r.google.reduce(sum('joy'), 0)
@@ -83,8 +83,17 @@ function googleRadarDatasetFromResponse(response) {
     labels: ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust'],
     datasets: [
       {
-        label: 'Your emotions',
-        data: average
+        label: label,
+        data: average,
+        pointBackgroundColor: [
+          emotionsToColor.anger,
+          emotionsToColor.joy,
+          emotionsToColor.sadness,
+          emotionsToColor.surprise,
+          emotionsToColor.fear,
+          emotionsToColor.disgust
+        ],
+        pointRadius: 5
       }
     ]
   }
@@ -94,21 +103,7 @@ function watsonWordsFromResponse(response) {
   return R.flatten(response.map(r => r.watson.map(w => w.keywords)))
 }
 
-//contents: "That test was so long!  Four hours!  I really do not understand why we have to take this test anyway.  Are our grade point averages (GPAs) not good enough for college?"
-//created_at: "2018-09-21T12:30:30.002Z"
-//id: "1"
-//keywords: (4) [{…}, {…}, {…}, {…}]
-//relevance: 0.955942988395691
-//room_id: 1
-//user_id: 1
-//watson_id: 1
-
-//anger: 1.40659496188164
-//disgust: 0.2797899954020975
-//fear: 0.518645010888575
-//joy: 0.5065650120377551
-//sadness: 0.93511998653412
-function marimekkoDataFromResponse(response) {
+function marimekkoDataFromResponse(response, sampleSize = 24) {
   const computeAverageEmotions = kw => {
     const keywords = kw.reduce(
       (acc, curr) => {
@@ -185,9 +180,7 @@ function marimekkoDataFromResponse(response) {
     (a, b) => a.timestamp > b.timestamp
   )
 
-  // TODO: Make it work for all array sizes
-  const SAMPLES = 24
-  const perSlice = allData.length / SAMPLES
+  const perSlice = Math.floor(allData.length / sampleSize)
   const out = []
   let prevTimestamp = 0
 
@@ -196,7 +189,9 @@ function marimekkoDataFromResponse(response) {
       prevTimestamp = allData[i].timestamp
     }
 
-    out[i] = Object.assign({}, allData[i], { timestamp: prevTimestamp })
+    if (!R.isNil(allData[i])) {
+      out[i] = Object.assign({}, allData[i], { timestamp: prevTimestamp })
+    }
   }
 
   const grouped = R.groupWith((a, b) => a.timestamp === b.timestamp, out)
