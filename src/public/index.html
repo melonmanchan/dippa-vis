@@ -9,6 +9,12 @@
     margin: 0;
   }
 
+  @media print {
+    .no-print, .no-print * {
+      display: none !important;
+    }
+  }
+
   main {
     padding-top: 80px;
     margin-left: 5px;
@@ -43,6 +49,7 @@
 
   .canvas-wrapper {
     display: flex;
+    margin-bottom: 20px;
   }
 
   .canvas-container {
@@ -189,10 +196,10 @@
 
     window.onload = main
     </script>
-    <header class="header">
+    <header class="header no-print">
       <div>
         <span>
-        Current user: 
+        Current selected user: 
         </span>
 
       <select id="users-select">
@@ -219,7 +226,7 @@
         <div>
       <div class="self-word-cloud">
         </div>
-        <select id="self-word-select">
+        <select id="self-word-select" class="no-print">
           <option value="joy">Joy</option>
           <option value="fear">Fear</option>
           <option value="disgust">Disgust</option>
@@ -231,7 +238,7 @@
         <div>
           <div class="group-word-cloud">
           </div>
-          <select id="group-word-select">
+          <select id="group-word-select" class="no-print">
             <option value="joy">Joy</option>
             <option value="fear">Fear</option>
             <option value="disgust">Disgust</option>
@@ -244,15 +251,15 @@
 
       <div class="canvas-wrapper">
         <div>
-          <input type="range" min="1" max="25" value="10" id="self-marimekko-range">
           <div id="self-marimekko">
           </div>
+          <input class="no-print" type="range" min="1" max="25" value="10" id="self-marimekko-range">
         </div>
 
         <div>
-          <input type="range" min="1" max="25" value="10" id="group-marimekko-range">
           <div id="group-marimekko">
           </div>
+          <input class="no-print" type="range" min="1" max="25" value="10" id="group-marimekko-range">
         </div>
       </div>
     </main>
