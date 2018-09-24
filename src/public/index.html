@@ -82,7 +82,7 @@
 //      initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
 //      initEmotionsWordCloudByUser(currentLabel)
 
-      console.log(marimekkoDataFromResponse(json))
+    initEmotionsMarimekko(marimekkoDataFromResponse(json))
     }
 
   function initUsersSelect(users, callback) {
@@ -99,7 +99,6 @@
     })
   }
 
-    initEmotionsMarimekko()
     window.onload = main
     </script>
   <div class="canvas-wrapper">

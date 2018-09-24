@@ -182,7 +182,7 @@ function marimekkoDataFromResponse(response) {
   )
 
   const allData = [...formattedWatsonData, ...formattedGoogleData].sort(
-    (a, b) => a.timestamp < b.timestamp
+    (a, b) => a.timestamp > b.timestamp
   )
 
   // TODO: Make it work for all array sizes
@@ -199,5 +199,63 @@ function marimekkoDataFromResponse(response) {
     out[i] = Object.assign({}, allData[i], { timestamp: prevTimestamp })
   }
 
-  out.map(o => console.log(o.timestamp))
+  const grouped = R.groupWith((a, b) => a.timestamp === b.timestamp, out)
+
+  const average = grouped.map(arr => {
+    const averageData = arr.reduce(
+      (acc, curr) => {
+        if (curr.type === 'watson') {
+          return {
+            joy: curr.joy + acc.joy,
+            surprise: acc.surprise,
+            anger: curr.anger + acc.anger,
+            fear: curr.fear + acc.fear,
+            sadness: curr.sadness + acc.sadness,
+            disgust: curr.disgust + acc.disgust,
+            timestamp: curr.timestamp
+          }
+        } else if (curr.type === 'google') {
+          return {
+            joy: curr.joy + acc.joy,
+            surprise: curr.surprise + acc.surprise,
+            anger: curr.anger + acc.anger,
+            fear: acc.fear,
+            sadness: curr.sorrow + acc.sadness,
+            disgust: acc.disgust,
+            timestamp: curr.timestamp
+          }
+        }
+
+        return acc
+      },
+      {
+        joy: 0,
+        surprise: 0,
+        anger: 0,
+        fear: 0,
+        sadness: 0,
+        disgust: 0,
+        timestamp: 0
+      }
+    )
+
+    return R.mapObjIndexed(
+      (data, key) =>
+        typeof data === 'number' && key !== 'timestamp'
+          ? data / arr.length
+          : data,
+      averageData
+    )
+  })
+
+  const pivotedAverage = average.map(a => [
+    { emotion: 'joy', timestamp: a.timestamp, value: a.joy },
+    { emotion: 'surprise', timestamp: a.timestamp, value: a.surprise },
+    { emotion: 'anger', timestamp: a.timestamp, value: a.anger },
+    { emotion: 'fear', timestamp: a.timestamp, value: a.fear },
+    { emotion: 'sadness', timestamp: a.timestamp, value: a.sadness },
+    { emotion: 'disgust', timestamp: a.timestamp, value: a.disgust }
+  ])
+
+  return R.flatten(pivotedAverage)
 }

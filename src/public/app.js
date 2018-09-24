@@ -77,7 +77,7 @@ function initEmotionsWordCloud(words, label, selector) {
   }
 }
 
-function initEmotionsMarimekko() {
+function initEmotionsMarimekko(data) {
   const margin = { top: 10, right: 20, bottom: 30, left: 30 }
 
   const emotionsToColor = {
@@ -94,40 +94,9 @@ function initEmotionsMarimekko() {
   const color = d3.scale.category10()
   const n = d3.format(',.0f')
   const p = d3.format('%')
-  const data = [
-    { emotion: 'joy', timestamp: 'Almond lovers', value: 3840 },
-    { emotion: 'joy', timestamp: 'Berry buyers', value: 1920 },
-    { emotion: 'joy', timestamp: 'Carrots-n-more', value: 960 },
-    { emotion: 'joy', timestamp: 'Delicious-n-new', value: 400 },
-
-    { emotion: 'surprise', timestamp: 'Almond lovers', value: 1600 },
-    { emotion: 'surprise', timestamp: 'Berry buyers', value: 1440 },
-    { emotion: 'surprise', timestamp: 'Carrots-n-more', value: 960 },
-    { emotion: 'surprise', timestamp: 'Delicious-n-new', value: 400 },
-
-    { emotion: 'anger', timestamp: 'Almond lovers', value: 640 },
-    { emotion: 'anger', timestamp: 'Berry buyers', value: 960 },
-    { emotion: 'anger', timestamp: 'Carrots-n-more', value: 640 },
-    { emotion: 'anger', timestamp: 'Delicious-n-new', value: 400 },
-
-    { emotion: 'fear', timestamp: 'Almond lovers', value: 320 },
-    { emotion: 'fear', timestamp: 'Berry buyers', value: 480 },
-    { emotion: 'fear', timestamp: 'Carrots-n-more', value: 640 },
-    { emotion: 'fear', timestamp: 'Delicious-n-new', value: 400 },
-
-    { emotion: 'sadness', timestamp: 'Almond lovers', value: 320 },
-    { emotion: 'sadness', timestamp: 'Berry buyers', value: 480 },
-    { emotion: 'sadness', timestamp: 'Carrots-n-more', value: 640 },
-    { emotion: 'sadness', timestamp: 'Delicious-n-new', value: 400 },
-
-    { emotion: 'disgust', timestamp: 'Almond lovers', value: 320 },
-    { emotion: 'disgust', timestamp: 'Berry buyers', value: 480 },
-    { emotion: 'disgust', timestamp: 'Carrots-n-more', value: 640 },
-    { emotion: 'disgust', timestamp: 'Delicious-n-new', value: 400 }
-  ]
 
   function title(d) {
-    return d.timestamp + ': ' + d.parent.key + ': ' + n(d.value)
+    return new Date(d.timestamp).toTimeString()
   }
 
   var nest = d3
