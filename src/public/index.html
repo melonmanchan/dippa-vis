@@ -13,12 +13,37 @@
     .no-print, .no-print * {
       display: none !important;
     }
+
+    main {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .row {
+      display: block;
+    }
+
+    .column {
+      width: 100%;
+    }
   }
 
   main {
+    display: flex;
     padding-top: 80px;
     margin-left: 5px;
     margin-right: 5px;
+  }
+
+  .column {
+    width: 50vw;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 20px;
   }
 
   .color-wrapper {
@@ -47,13 +72,18 @@
     display: inline-block;
   }
 
+  .submit-form {
+    display: flex;
+    align-items: center;
+  }
+
+  .submit-form * {
+    margin-right: 5px;
+  }
+
   .canvas-wrapper {
     display: flex;
     margin-bottom: 20px;
-  }
-
-  .canvas-container {
-    width: 50%;
   }
 
   rect {
@@ -192,12 +222,10 @@
     })
   }
 
-
-
     window.onload = main
     </script>
-    <header class="header no-print">
-      <div>
+    <header class="header">
+      <div class="no-print">
         <span>
         Current selected user: 
         </span>
@@ -207,61 +235,81 @@
       </div>
 
       <div class="colors" id="colors">
-
       </div>
+
+      <div class="submit-form no-print" id="submit-form">
+        <span>Email:</span><input id="email" type="email" name="email">
+        <input type="submit" value="Export">
+      </div>
+
     </header>
 
     <main>
-      <div class="canvas-wrapper">
-        <div class="canvas-container">
+
+      <div class="column">
+        <div class="row">
+          <h1>Your emotions</h1>
+        </div>
+        <div class="row">
           <canvas id="radar-self"></canvas>
         </div>
 
-        <div class="canvas-container">
-          <canvas id="radar-group"></canvas>
+
+        <div class="row">
+          <div>
+            <div class="self-word-cloud">
+            </div>
+            <select id="self-word-select" class="no-print">
+              <option value="joy">Joy</option>
+              <option value="fear">Fear</option>
+              <option value="disgust">Disgust</option>
+              <option value="anger">Anger</option>
+              <option value="sadness">Sadness</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div id="self-marimekko">
+            </div>
+            <input class="no-print" type="range" min="1" max="25" value="10" id="self-marimekko-range">
+          </div>
         </div>
       </div>
 
-      <div class="canvas-wrapper">
-        <div>
-      <div class="self-word-cloud">
-        </div>
-        <select id="self-word-select" class="no-print">
-          <option value="joy">Joy</option>
-          <option value="fear">Fear</option>
-          <option value="disgust">Disgust</option>
-          <option value="anger">Anger</option>
-          <option value="sadness">Sadness</option>
-        </select>
-        </div>
-
-        <div>
-          <div class="group-word-cloud">
+      <div class="column">
+          <div class="row">
+            <h1>Group emotions</h1>
           </div>
-          <select id="group-word-select" class="no-print">
-            <option value="joy">Joy</option>
-            <option value="fear">Fear</option>
-            <option value="disgust">Disgust</option>
-            <option value="anger">Anger</option>
-            <option value="sadness">Sadness</option>
-          </select>
+
+          <div class="row">
+              <canvas id="radar-group"></canvas>
+          </div>
+
+          <div class="row">
+            <div>
+              <div class="group-word-cloud">
+              </div>
+              <select id="group-word-select" class="no-print">
+                <option value="joy">Joy</option>
+                <option value="fear">Fear</option>
+                <option value="disgust">Disgust</option>
+                <option value="anger">Anger</option>
+                <option value="sadness">Sadness</option>
+              </select>
+            </div>
+          </div>
+
+        <div class="row">
+          <div>
+            <div id="group-marimekko">
+            </div>
+            <input class="no-print" type="range" min="1" max="25" value="10" id="group-marimekko-range">
+          </div>
         </div>
       </div>
 
-
-      <div class="canvas-wrapper">
-        <div>
-          <div id="self-marimekko">
-          </div>
-          <input class="no-print" type="range" min="1" max="25" value="10" id="self-marimekko-range">
-        </div>
-
-        <div>
-          <div id="group-marimekko">
-          </div>
-          <input class="no-print" type="range" min="1" max="25" value="10" id="group-marimekko-range">
-        </div>
-      </div>
     </main>
 </body>
 </html>

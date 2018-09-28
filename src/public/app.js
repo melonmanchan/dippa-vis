@@ -72,7 +72,7 @@ function initEmotionsMarimekko(data, selector) {
 
   const margin = { top: 10, right: 20, bottom: 30, left: 30 }
 
-  const width = 960 - margin.left - margin.right
+  const width = 840 - margin.left - margin.right
   const height = 450 - margin.top - margin.bottom
   const color = d3.scale.category10()
   const n = d3.format(',.0f')
