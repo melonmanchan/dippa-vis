@@ -5,7 +5,8 @@ function initEmotionsRadarChart(data, selector) {
 
   const config = {
     type: 'radar',
-    data: data
+    data: data,
+    options: { animation: false }
   }
 
   new Chart(ctx, config)

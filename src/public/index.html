@@ -20,7 +20,8 @@
     }
 
     .row {
-      display: block;
+      align-items: center;
+      margin-bottom: 40px;
     }
 
     .column {
@@ -37,6 +38,7 @@
 
   .column {
     width: 50vw;
+    page-break-before: always;
   }
 
   .row {
@@ -224,7 +226,7 @@
 
     window.onload = main
     </script>
-    <header class="header">
+    <header class="header no-print">
       <div class="no-print">
         <span>
         Current selected user: 
