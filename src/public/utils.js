@@ -64,7 +64,7 @@ function separateDataByUsers(response) {
   return formatted
 }
 
-function googleRadarDatasetFromResponse(response, label) {
+function googleRadarDatasetFromResponse(response, label, currentEmotion) {
   const data = response.reduce(
     (acc, r) => {
       const gJoy = r.google.reduce(sum('joy'), 0)
@@ -110,8 +110,14 @@ function googleRadarDatasetFromResponse(response, label) {
 
   const average = data.map(d => d / response.length)
 
+  const labels = ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust']
+
+  const pointRadius = labels.map(emotion
+    l => (l.toLowerCase() === currentEmotion ? 7 : 5)
+  )
+
   return {
-    labels: ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust'],
+    labels: labels,
     datasets: [
       {
         label: label,
@@ -124,7 +130,7 @@ function googleRadarDatasetFromResponse(response, label) {
           emotionsToColor.fear,
           emotionsToColor.disgust
         ],
-        pointRadius: 5
+        pointRadius: pointRadius
       }
     ]
   }

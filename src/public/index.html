@@ -69,7 +69,7 @@
     text-transform: capitalize;
   }
 
-  .active {
+   .active {
     border-style: solid;
     font-weight: bold;
   }
@@ -153,8 +153,8 @@
       const dataByUser = separateDataByUsers(json)
 
       const initChartByUser = (ind) => {
-        const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[ind]], 'Your emotions')
-        const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser,'Group emotions')
+        const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[ind]], 'Your emotions', currentLabel)
+        const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser,'Group emotions', groupLabel)
 
         initEmotionsRadarChart(selfRadarDataset, 'radar-self')
         initEmotionsRadarChart(groupRadarDataset, 'radar-group')
@@ -223,6 +223,13 @@
           setSelectedEmotionState(emotion)
           initEmotionsWordCloudByUser(emotion)
           initEmotionsWordCloudForGroup(emotion)
+
+          const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[currentUserInd]], 'Your emotions', currentLabel)
+          const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser,'Group emotions', groupLabel)
+
+          initEmotionsRadarChart(selfRadarDataset, 'radar-self')
+          initEmotionsRadarChart(groupRadarDataset, 'radar-group')
+
         }
 
         colorsWrapper.appendChild(wrapperSpan)
