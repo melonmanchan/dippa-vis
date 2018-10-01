@@ -15,6 +15,37 @@ async function getRoomData(id) {
   return json
 }
 
+async function submitExportRequest(
+  email,
+  selectedUserId,
+  userEmotion,
+  groupEmotion,
+  userMarimekkoState,
+  groupMarimekkoState
+) {
+  const payload = {
+    email,
+    selectedUserId,
+    userEmotion,
+    groupEmotion,
+    userMarimekkoState,
+    groupMarimekkoState
+  }
+
+  const rawResponse = await fetch('http://localhost:3001/export', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+
+  const content = await rawResponse.json()
+
+  return content
+}
+
 function separateDataByUsers(response) {
   const { google, watson, users } = response
   const ids = R.keys(users)

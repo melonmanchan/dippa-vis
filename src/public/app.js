@@ -6,7 +6,7 @@ function initEmotionsRadarChart(data, selector) {
   const config = {
     type: 'radar',
     data: data,
-    options: { animation: false, responsive: false }
+    options: { animation: false }
   }
 
   new Chart(ctx, config)
@@ -21,8 +21,14 @@ function initEmotionsWordCloud(words, label, selector) {
   const fill = d3.scale.category20()
 
   const formattedWords = words.map(function(d) {
-    return { text: d.word, size: Math.max(d[label] * 11, 11) }
+    return {
+      text: d.word,
+      size: Math.max(d[label] * 11, 11),
+      weightedAverage: d[label]
+    }
   })
+
+  const color = window.emotionsToColor[label]
 
   d3.layout
     .cloud()
@@ -34,7 +40,7 @@ function initEmotionsWordCloud(words, label, selector) {
     })
     .font('Impact')
     .fontSize(function(d) {
-      return d.size
+      return 28
     })
     .on('end', draw)
     .start()
@@ -53,6 +59,13 @@ function initEmotionsWordCloud(words, label, selector) {
       .append('text')
       .style('font-size', function(d) {
         return d.size + 'px'
+      })
+      .style('fill', function(d) {
+        return color
+      })
+      .style('fill-opacity', function(d) {
+        const { weightedAverage } = d
+        return Math.max(weightedAverage / 5, 0.2)
       })
       .style('font-family', 'Impact')
       .attr('text-anchor', 'middle')
@@ -113,17 +126,17 @@ function initEmotionsMarimekko(data, selector) {
     .datum({ values: nest.entries(data) })
     .call(chart)
 
-  //  svg
-  //    .append('g')
-  //    .attr('class', 'x axis')
-  //    .attr('transform', 'translate(0,' + treemap.size()[1] + ')')
-  //    .call(
-  //      d3.svg
-  //        .axis()
-  //        .scale(d3.scale.linear().range([0, treemap.size()[0]]))
-  //        .tickFormat(d3.format('%'))
-  //    )
-  //
+  svg
+    .append('g')
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0,' + treemap.size()[1] + ')')
+    .call(
+      d3.svg
+        .axis()
+        .scale(d3.scale.linear().range([0, treemap.size()[0]]))
+        .tickFormat(d3.format('%'))
+    )
+
   function chart(selection) {
     selection.each(function() {
       var cell = d3

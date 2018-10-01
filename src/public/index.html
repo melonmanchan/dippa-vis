@@ -49,6 +49,7 @@
   }
 
   .color-wrapper {
+    cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -66,6 +67,11 @@
     display: inline-block;
     line-height: 24px;
     text-transform: capitalize;
+  }
+
+  .active {
+    border-style: solid;
+    font-weight: bold;
   }
 
   .color-box {
@@ -111,16 +117,21 @@
   padding: 20px;
   color: white;
 }
+
+.flex-center {
+  display: flex;
+  align-items: center;
+}
 </style>
 <body>
   <script>
   window.emotionsToColor = {
-    joy: '#1abc9c',
-    surprise: '#e74c3c',
-    anger: '#f1c40f',
-    fear: '#ecf0f1',
-    sadness: '#2c3e50',
-    disgust: '#2ecc71'
+    joy: '#f39c12',
+    surprise: '#f1c40f',
+    anger: '#e74c3c',
+    fear: '#2c3e50',
+    sadness: '#95a5a6',
+    disgust: '#27ae60'
   }
 
   </script>
@@ -134,6 +145,7 @@
   <script>
     async function main() {
       let currentLabel = 'joy'
+      let groupLabel = 'joy'
       let currentUserInd = 0
       let currentSampleSize = 10
 
@@ -157,6 +169,7 @@
       let initEmotionsWordCloudByUser = () => {}
 
       const initEmotionsWordCloudForGroup = (emotion) => {
+        groupLabel = emotion
         const groupWords = watsonWordsFromResponse(dataByUser)
         initEmotionsWordCloud(groupWords, emotion, '.group-word-cloud')
       }
@@ -167,8 +180,6 @@
         initEmotionsMarimekko(data, '#self-marimekko')
       }
 
-      document.getElementById('self-word-select').onchange = (e) => initEmotionsWordCloudByUser(e.target.value)
-      document.getElementById('group-word-select').onchange = (e) => initEmotionsWordCloudForGroup(e.target.value)
 
       document.getElementById('group-marimekko-range').onchange = (e) => initEmotionsMarimekko(marimekkoDataFromResponse(json, parseInt(e.target.value)), '#group-marimekko')
       document.getElementById('self-marimekko-range').onchange = (e) => initEmotionsMarimekkoByUser(parseInt(e.target.value))
@@ -203,11 +214,42 @@
         const colorBox = document.createElement('span')
         colorBox.className = 'color-box'
         colorBox.style.backgroundColor = color
+        colorBox.dataset.emotion = emotion
         label.innerHTML = emotion
         wrapperSpan.appendChild(label)
         wrapperSpan.appendChild(colorBox)
+
+        wrapperSpan.onclick = () => {
+          setSelectedEmotionState(emotion)
+          initEmotionsWordCloudByUser(emotion)
+          initEmotionsWordCloudForGroup(emotion)
+        }
+
         colorsWrapper.appendChild(wrapperSpan)
       })
+
+      const setSelectedEmotionState = (emotion) => {
+        document.querySelectorAll('.color-box').forEach(el => el.classList.remove('active'))
+        document.querySelector(`[data-emotion|="${emotion}"]`).classList.add('active')
+      }
+
+      document.getElementById('export-pdf').onclick = async () => {
+        const email = document.getElementById('email').value
+        const selectedUserId = currentUserInd
+        const userMarimekkoState = document.getElementById('self-marimekko-range').value
+        const groupMarimekkoState = document.getElementById('group-marimekko-range').value
+
+        const resp = await submitExportRequest(
+            email,
+            selectedUserId,
+            currentLabel,
+            groupLabel,
+            userMarimekkoState,
+            groupMarimekkoState
+        )
+
+        console.log(resp)
+      }
     }
 
   function initUsersSelect(users, callback) {
@@ -227,7 +269,7 @@
     window.onload = main
     </script>
     <header class="header no-print">
-      <div class="no-print">
+      <div class="no-print flex-center">
         <span>
         Current selected user: 
         </span>
@@ -239,9 +281,9 @@
       <div class="colors" id="colors">
       </div>
 
-      <div class="submit-form no-print" id="submit-form">
+      <div class="submit-form no-print flex-center" id="submit-form">
         <span>Email:</span><input id="email" type="email" name="email">
-        <input type="submit" value="Export">
+        <input id="export-pdf" type="submit" value="Export">
       </div>
 
     </header>
@@ -261,13 +303,6 @@
           <div>
             <div class="self-word-cloud">
             </div>
-            <select id="self-word-select" class="no-print">
-              <option value="joy">Joy</option>
-              <option value="fear">Fear</option>
-              <option value="disgust">Disgust</option>
-              <option value="anger">Anger</option>
-              <option value="sadness">Sadness</option>
-            </select>
           </div>
         </div>
 
@@ -293,13 +328,6 @@
             <div>
               <div class="group-word-cloud">
               </div>
-              <select id="group-word-select" class="no-print">
-                <option value="joy">Joy</option>
-                <option value="fear">Fear</option>
-                <option value="disgust">Disgust</option>
-                <option value="anger">Anger</option>
-                <option value="sadness">Sadness</option>
-              </select>
             </div>
           </div>
 
