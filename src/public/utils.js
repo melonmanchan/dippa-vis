@@ -112,7 +112,7 @@ function googleRadarDatasetFromResponse(response, label, currentEmotion) {
 
   const labels = ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust']
 
-  const pointRadius = labels.map(emotion
+  const pointRadius = labels.map(
     l => (l.toLowerCase() === currentEmotion ? 7 : 5)
   )
 

@@ -37,11 +37,17 @@
   }
 
   .column {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     width: 50vw;
     page-break-before: always;
   }
 
   .row {
+    align-items: center;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -92,6 +98,11 @@
   .canvas-wrapper {
     display: flex;
     margin-bottom: 20px;
+  }
+
+  .radar-wrapper {
+    width: 100%;
+    height: 400px;
   }
 
   rect {
