@@ -110,7 +110,7 @@ function googleRadarDatasetFromResponse(response, label, currentEmotion) {
 
   const average = data.map(d => d / response.length)
 
-  const labels = ['Anger', 'Joy', 'Sorrow', 'Surprise', 'Fear', 'Disgust']
+  const labels = ['Anger', 'Fear', 'Sadness', 'Joy', 'Surprise', 'Disgust']
 
   const pointRadius = labels.map(
     l => (l.toLowerCase() === currentEmotion ? 7 : 5)
@@ -124,10 +124,10 @@ function googleRadarDatasetFromResponse(response, label, currentEmotion) {
         data: average,
         pointBackgroundColor: [
           emotionsToColor.anger,
-          emotionsToColor.joy,
-          emotionsToColor.sadness,
-          emotionsToColor.surprise,
           emotionsToColor.fear,
+          emotionsToColor.sadness,
+          emotionsToColor.joy,
+          emotionsToColor.surprise,
           emotionsToColor.disgust
         ],
         pointRadius: pointRadius
@@ -281,11 +281,11 @@ function marimekkoDataFromResponse(response, sampleSize = 24) {
   })
 
   const pivotedAverage = average.map(a => [
-    { emotion: 'joy', timestamp: a.timestamp, value: a.joy },
-    { emotion: 'surprise', timestamp: a.timestamp, value: a.surprise },
     { emotion: 'anger', timestamp: a.timestamp, value: a.anger },
     { emotion: 'fear', timestamp: a.timestamp, value: a.fear },
     { emotion: 'sadness', timestamp: a.timestamp, value: a.sadness },
+    { emotion: 'joy', timestamp: a.timestamp, value: a.joy },
+    { emotion: 'surprise', timestamp: a.timestamp, value: a.surprise },
     { emotion: 'disgust', timestamp: a.timestamp, value: a.disgust }
   ])
 
