@@ -224,6 +224,10 @@
         const label = document.createElement('span')
         const colorBox = document.createElement('span')
         colorBox.className = 'color-box'
+        if (emotion === currentLabel) {
+          colorBox.className = 'color-box active' 
+        }
+
         colorBox.style.backgroundColor = color
         colorBox.dataset.emotion = emotion
         label.innerHTML = emotion

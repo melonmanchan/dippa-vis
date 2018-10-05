@@ -126,6 +126,11 @@ function initEmotionsMarimekko(data, selector) {
     .datum({ values: nest.entries(data) })
     .call(chart)
 
+  const firstTime = data[0].timestamp
+  const lastTime = data[data.length - 1].timestamp
+
+  const axisRange = createRange(firstTime, lastTime, 10)
+
   svg
     .append('g')
     .attr('class', 'x axis')
@@ -134,7 +139,9 @@ function initEmotionsMarimekko(data, selector) {
       d3.svg
         .axis()
         .scale(d3.scale.linear().range([0, treemap.size()[0]]))
-        .tickFormat(d3.format('%'))
+        .tickFormat((d, i) => {
+          return moment(axisRange[i]).format('HH:mm:ss')
+        })
     )
 
   function chart(selection) {

@@ -291,3 +291,15 @@ function marimekkoDataFromResponse(response, sampleSize = 24) {
 
   return R.flatten(pivotedAverage)
 }
+
+function createRange(start, stop, steps) {
+  const out = []
+
+  const diff = stop - start
+
+  for (let i = 0; i <= steps; i++) {
+    out[i] = Math.floor(stop - diff * i * 0.1)
+  }
+
+  return out.reverse()
+}
