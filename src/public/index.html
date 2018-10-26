@@ -58,13 +58,34 @@ select {
   <main>
     <div class="room-select">
       <h1>Select room</h1>
-        <select>
-            <option value="Watson">Watson</option>
-            <option value="Native">Native</option>
+      <select id="rooms-select" onchange="alert(1)">
         </select>
       <hr/>
       <button id="show-vis" disabled>Show visualisation</button>
     </div>
   </main>
+  <script src="./utils.js"> </script>
+
+  <script>
+    async function main() {
+      const { rooms } = await getAllRooms()
+      const select = document.getElementById('rooms-select')
+      const btn = document.getElementById('show-vis')
+      btn.removeAttribute('disabled')
+      btn.onclick = () => {
+        const id = select.options[select.selectedIndex].value;
+        window.location.href = `./vis/?id=${id}`
+      }
+
+      rooms.forEach(r => {
+        const option = document.createElement('option');
+        option.value = r.id
+        option.text = r.name
+        select.add(option)
+      })
+    }
+
+    window.onload = main
+  </script>
 </body>
 </html>

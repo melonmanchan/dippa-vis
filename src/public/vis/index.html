@@ -151,16 +151,17 @@
   <script src="//cdn.jsdelivr.net/npm/ramda@latest/dist/ramda.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"> </script>
-  <script src="./utils.js"> </script>
+  <script src="../utils.js"> </script>
   <script src="./app.js"> </script>
   <script>
     async function main() {
+      const getParam = getQueryParam()
       let currentLabel = 'joy'
       let groupLabel = 'joy'
       let currentUserInd = 0
       let currentSampleSize = 10
 
-      const json = await getRoomData(1)
+      const json = await getRoomData(getParam('id') || 1)
       const dataByUser = separateDataByUsers(json)
 
       const initChartByUser = (ind) => {

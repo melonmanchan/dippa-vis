@@ -3,9 +3,17 @@ const db = require('../db')
 const router = new Router()
 const R = require('ramda')
 
-// export our router to be mounted by the parent application
 module.exports = router
 
+// Get data for all rooms
+router.get('/', async (req, res) => {
+  const { rows: roomsRow } = await db.query('SELECT * FROM rooms;')
+  res.json({
+    rooms: roomsRow
+  })
+})
+
+// Get analytics data for a single room
 router.get('/:id', async (req, res) => {
   const { id } = req.params
 

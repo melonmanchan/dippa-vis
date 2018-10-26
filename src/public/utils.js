@@ -9,8 +9,20 @@ const watsonCount = label => (acc, curr) =>
 
 const nanClamp = num => (isNaN(num) ? 0 : num)
 
+const getQueryParam = () => {
+  const urlParams = new URLSearchParams(window.location.search)
+
+  return key => urlParams.get(key)
+}
+
 async function getRoomData(id) {
-  const response = await fetch(`./rooms/${id}`)
+  const response = await fetch(`/rooms/${id}`)
+  const json = await response.json()
+  return json
+}
+
+async function getAllRooms() {
+  const response = await fetch('/rooms')
   const json = await response.json()
   return json
 }
