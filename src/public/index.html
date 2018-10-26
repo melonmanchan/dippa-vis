@@ -2,366 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  <title>Select visualisation</title>
 </head>
 <style>
-  body {
-    margin: 0;
-    -webkit-print-color-adjust: exact;
-  }
-
-  @media print {
-    .no-print, .no-print * {
-      display: none !important;
-    }
-
-    main {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .row {
-      align-items: center;
-    }
-
-    .column {
-      width: 100%;
-    }
-  }
-
-  main {
-    display: flex;
-    padding-top: 80px;
-    margin-left: 5px;
-    margin-right: 5px;
-  }
-
-  .column {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    width: 50vw;
-    page-break-before: always;
-  }
-
-  .row {
-    align-items: center;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-
-  .color-wrapper {
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .colors {
-    display: flex;
-    justify-content: space-around;
-    width: 60%;
-  }
-
-  .color-wrapper span {
-    margin-right: 5px;
-    height: 24px;
-    display: inline-block;
-    line-height: 24px;
-    text-transform: capitalize;
-  }
-
-   .active {
-    border-style: solid;
-    font-weight: bold;
-  }
-
-  .color-box {
-    height: 24px;
-    width: 24px;
-    display: inline-block;
-  }
-
-  .submit-form {
-    display: flex;
-    align-items: center;
-  }
-
-  .submit-form * {
-    margin-right: 5px;
-  }
-
-  .canvas-wrapper {
-    display: flex;
-    margin-bottom: 20px;
-  }
-
-  .radar-wrapper {
-    width: 100%;
-    height: 400px;
-  }
-
-  rect {
-    stroke: #000;
-    fill: none;
-  }
-
-  svg {
-    shape-rendering: crispEdges;
-  }
-
-  .axis path, .axis line {
-    fill: none;
-    stroke: #000;
-  }
-
-.header {
-  display: flex;
-  position: fixed;
-  width: 100vw;
-  background-color: #252323;
-  height: 30px;
-  padding: 20px;
-  color: white;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #F6F7F8;
 }
 
-.flex-center {
+main {
   display: flex;
-  align-items: center;
+  width: 100vw;
+  height: calc(100vh - 70px);
+  justify-content: center;
+}
+
+.room-select {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 300px;
+}
+
+button {
+ height:  36px;
+ margin:  0px;
+ padding: 2px 8px;
+
+ border-width:  0px 2px 2px 0px;
+ border-style:  solid;
+ border-radius: 2px;
+ background-color: #2EC4B6;
+ color: #fff;
+ font-size:      12px;
+ line-height:    32px;
+ letter-spacing: 1px;
+}
+
+button:disabled {
+  opacity: .6;
+  pointer-events: none;
+}
+
+select {
+ height:  36px;
+ border-style:  solid;
+ border-radius: 2px;
+ font-size:      12px;
+ line-height:    32px;
 }
 </style>
 <body>
-  <script>
-  window.emotionsToColor = {
-    anger: '#e74c3c',
-    fear: '#2c3e50',
-    sadness: '#95a5a6',
-    joy: '#f39c12',
-    surprise: '#f1c40f',
-    disgust: '#27ae60'
-  }
-
-  </script>
-  <script src="https://d3js.org/d3.v3.js"> </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.4/d3.layout.cloud.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/ramda@latest/dist/ramda.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"> </script>
-  <script src="./utils.js"> </script>
-  <script src="./app.js"> </script>
-  <script>
-    async function main() {
-      let currentLabel = 'joy'
-      let groupLabel = 'joy'
-      let currentUserInd = 0
-      let currentSampleSize = 10
-
-      const json = await getRoomData(1)
-      const dataByUser = separateDataByUsers(json)
-
-      const initChartByUser = (ind) => {
-        const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[ind]], 'Your emotions', currentLabel)
-        const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser,'Group emotions', groupLabel)
-
-        initEmotionsRadarChart(selfRadarDataset, 'radar-self')
-        initEmotionsRadarChart(groupRadarDataset, 'radar-group')
-      }
-
-      const _initEmotionsWordCloudByUser = (ind) => (emotion) => {
-        currentLabel = emotion
-        const selfWords = watsonWordsFromResponse([dataByUser[ind]])
-        initEmotionsWordCloud(selfWords, currentLabel, '.self-word-cloud')
-      }
-
-      let initEmotionsWordCloudByUser = () => {}
-
-      const initEmotionsWordCloudForGroup = (emotion) => {
-        groupLabel = emotion
-        const groupWords = watsonWordsFromResponse(dataByUser)
-        initEmotionsWordCloud(groupWords, emotion, '.group-word-cloud')
-      }
-
-      const initEmotionsMarimekkoByUser = (val) => {
-        currentSampleSize = val
-        const data = marimekkoDataFromResponse(dataByUser[currentUserInd], currentSampleSize)
-        initEmotionsMarimekko(data, '#self-marimekko')
-      }
-
-
-      document.getElementById('group-marimekko-range').onchange = (e) => initEmotionsMarimekko(marimekkoDataFromResponse(json, parseInt(e.target.value)), '#group-marimekko')
-      document.getElementById('self-marimekko-range').onchange = (e) => initEmotionsMarimekkoByUser(parseInt(e.target.value))
-
-      initUsersSelect(json.users, (id) => {
-        const ind = dataByUser.findIndex(d => d.user.id == id)
-
-        currentUserInd = ind
-        initChartByUser(currentUserInd)
-        initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
-        initEmotionsWordCloudByUser(currentLabel)
-        initEmotionsMarimekkoByUser(currentSampleSize)
-      })
-
-      // Default initialization
-      initChartByUser(currentUserInd)
-
-      initEmotionsWordCloudByUser = _initEmotionsWordCloudByUser(currentUserInd)
-      initEmotionsWordCloudByUser(currentLabel)
-      initEmotionsWordCloudForGroup('joy')
-
-      initEmotionsMarimekkoByUser(currentSampleSize)
-      initEmotionsMarimekko(marimekkoDataFromResponse(json, currentSampleSize), '#group-marimekko')
-
-      const colorsWrapper = document.getElementById('colors')
-
-      R.toPairs(window.emotionsToColor).map(arr => {
-        const [emotion, color] = arr
-        const wrapperSpan = document.createElement('span')
-        wrapperSpan.className = 'color-wrapper'
-        const label = document.createElement('span')
-        const colorBox = document.createElement('span')
-        colorBox.className = 'color-box'
-        if (emotion === currentLabel) {
-          colorBox.className = 'color-box active' 
-        }
-
-        colorBox.style.backgroundColor = color
-        colorBox.dataset.emotion = emotion
-        label.innerHTML = emotion
-        wrapperSpan.appendChild(label)
-        wrapperSpan.appendChild(colorBox)
-
-        wrapperSpan.onclick = () => {
-          setSelectedEmotionState(emotion)
-          initEmotionsWordCloudByUser(emotion)
-          initEmotionsWordCloudForGroup(emotion)
-
-          const selfRadarDataset = googleRadarDatasetFromResponse([dataByUser[currentUserInd]], 'Your emotions', currentLabel)
-          const groupRadarDataset = googleRadarDatasetFromResponse(dataByUser,'Group emotions', groupLabel)
-
-          initEmotionsRadarChart(selfRadarDataset, 'radar-self')
-          initEmotionsRadarChart(groupRadarDataset, 'radar-group')
-
-        }
-
-        colorsWrapper.appendChild(wrapperSpan)
-      })
-
-      const setSelectedEmotionState = (emotion) => {
-        document.querySelectorAll('.color-box').forEach(el => el.classList.remove('active'))
-        document.querySelector(`[data-emotion|="${emotion}"]`).classList.add('active')
-      }
-
-      document.getElementById('export-pdf').onclick = async () => {
-        const email = document.getElementById('email').value
-        const selectedUserId = currentUserInd
-        const userMarimekkoState = document.getElementById('self-marimekko-range').value
-        const groupMarimekkoState = document.getElementById('group-marimekko-range').value
-
-        const resp = await submitExportRequest(
-            email,
-            selectedUserId,
-            currentLabel,
-            groupLabel,
-            userMarimekkoState,
-            groupMarimekkoState
-        )
-
-        console.log(resp)
-      }
-    }
-
-  function initUsersSelect(users, callback) {
-    const select = document.getElementById('users-select')
-    const ids = R.keys(users)
-
-    select.onchange = (e) => callback(e.target.value)
-
-    ids.forEach(id => {
-      const option = document.createElement("option");
-      option.value = id
-      option.text = users[id].name
-      select.add(option)
-    })
-  }
-
-    window.onload = main
-    </script>
-    <header class="header no-print">
-      <div class="no-print flex-center">
-        <span>
-        Current selected user: 
-        </span>
-
-      <select id="users-select">
-      </select>
-      </div>
-
-      <div class="colors" id="colors">
-      </div>
-
-      <div class="submit-form no-print flex-center" id="submit-form">
-        <span>Email:</span><input id="email" type="email" name="email">
-        <input id="export-pdf" type="submit" value="Export">
-      </div>
-
-    </header>
-
-    <main>
-
-      <div class="column">
-        <div class="row">
-          <h1>Your emotions</h1>
-        </div>
-        <div class="row">
-          <canvas id="radar-self"></canvas>
-        </div>
-
-
-        <div class="row">
-          <div>
-            <div class="self-word-cloud">
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <div id="self-marimekko">
-            </div>
-            <input class="no-print" type="range" min="1" max="25" value="10" id="self-marimekko-range">
-          </div>
-        </div>
-      </div>
-
-      <div class="column">
-          <div class="row">
-            <h1>Group emotions</h1>
-          </div>
-
-          <div class="row">
-              <canvas id="radar-group"></canvas>
-          </div>
-
-          <div class="row">
-            <div>
-              <div class="group-word-cloud">
-              </div>
-            </div>
-          </div>
-
-        <div class="row">
-          <div>
-            <div id="group-marimekko">
-            </div>
-            <input class="no-print" type="range" min="1" max="25" value="10" id="group-marimekko-range">
-          </div>
-        </div>
-      </div>
-
-    </main>
+  <main>
+    <div class="room-select">
+      <h1>Select room</h1>
+        <select>
+            <option value="Watson">Watson</option>
+            <option value="Native">Native</option>
+        </select>
+      <hr/>
+      <button id="show-vis" disabled>Show visualisation</button>
+    </div>
+  </main>
 </body>
 </html>
