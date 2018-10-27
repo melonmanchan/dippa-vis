@@ -32,9 +32,14 @@ router.get('/:id', async (req, res) => {
     [id]
   )
 
+  const googleIds = googleRow.map(g => g.user_id)
+  const watsonIds = watsonRow.map(w => w.user_id)
+
   const userIds = R.uniq(
-    watsonRow.map(w => w.user_id),
-    googleRow.map(g => g.user_id)
+    [
+    ...googleIds,
+    ...watsonIds
+    ]
   )
 
   const { rows: usersRow } = await db.query(
