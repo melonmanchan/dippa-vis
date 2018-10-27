@@ -229,7 +229,7 @@ function marimekkoDataFromResponse(response, sampleSize = 24) {
     (a, b) => a.timestamp > b.timestamp
   )
 
-  const perSlice = Math.floor(allData.length / sampleSize)
+  const perSlice = Math.ceil(allData.length / sampleSize)
   const out = []
   let prevTimestamp = 0
 
