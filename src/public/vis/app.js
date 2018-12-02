@@ -12,11 +12,20 @@ function initEmotionsRadarChart(data, selector) {
   new Chart(ctx, config)
 }
 
-function initEmotionsWordCloud(words, label, selector) {
-  if (words.length === 0) {
-    document.querySelector(selector).style.display = 'none'
-    return
+const NO_WORDS_AVAILABLE = [
+  {
+    word: 'NO DATA AVAILABLE :(',
+    anger: 5,
+    disgust: 5,
+    fear: 5,
+    joy: 5,
+    sadness: 5,
+    sentiment: 0
   }
+]
+
+function initEmotionsWordCloud(words, label, selector) {
+  words = words.length === 0 ? NO_WORDS_AVAILABLE : words
 
   document.querySelector(selector).style.display = 'initial'
 
