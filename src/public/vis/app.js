@@ -13,6 +13,13 @@ function initEmotionsRadarChart(data, selector) {
 }
 
 function initEmotionsWordCloud(words, label, selector) {
+  if (words.length === 0) {
+    document.querySelector(selector).style.display = 'none'
+    return
+  }
+
+  document.querySelector(selector).style.display = 'initial'
+
   d3
     .select(selector)
     .select('svg')
